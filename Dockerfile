@@ -1,4 +1,4 @@
-ARG VERSION=latest
+ARG VERSION=21.10.0
 FROM public.ecr.aws/seqera-labs/nextflow:${VERSION} AS build
 
 # The upstream nextflow containers are based on alpine
@@ -14,6 +14,8 @@ RUN yum update -y \
     ncurses-compat-libs \
     procps \    
     unzip \
+    zlib \
+    zlib.i386 \
  && yum clean -y all
 RUN rm -rf /var/cache/yum
 
