@@ -11,6 +11,8 @@ set -e  # fail on any error
 
 DEFAULT_AWS_CLI_PATH=/opt/aws-cli/bin/aws
 AWS_CLI_PATH=${JOB_AWS_CLI_PATH:-$DEFAULT_AWS_CLI_PATH}
+AWS_LD_PATH=/opt/aws-cli/v2/current/dist/
+export LD_LIBRARY_PATH="${AWS_LD_PATH}:${LD_LIBRARY_PATH}"
 
 echo "=== ENVIRONMENT ==="
 printenv
@@ -46,6 +48,7 @@ workDir = "$NF_WORKDIR"
 process.executor = "awsbatch"
 process.queue = "$NF_JOB_QUEUE"
 aws.batch.cliPath = "$AWS_CLI_PATH"
+env.LD_LIBRARY_PATH="$AWS_LD_PATH"
 EOF
 
 if [[ "$EFS_MOUNT" != "" ]]

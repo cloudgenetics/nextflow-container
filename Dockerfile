@@ -9,21 +9,22 @@ COPY --from=build /usr/local/bin/nextflow /usr/bin/nextflow
 RUN yum update -y \
  && yum install -y \
     curl \
-    hostname \
     java \
     ncurses-compat-libs \
     procps \    
     unzip \
-    zlib \
-    zlib.i386 \
  && yum clean -y all
 RUN rm -rf /var/cache/yum
 
 # install awscli v2
-RUN curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" \
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" \
  && unzip -q /tmp/awscliv2.zip -d /tmp \
- && /tmp/aws/install -b /usr/bin \
+ && /tmp/aws/install -i /opt/aws-cli -b /opt/aws-cli/bin\
  && rm -rf /tmp/aws*
+
+ENV PATH="${PATH}:/opt/aws-cli/bin/"
+ENV LD_LIBRARY_PATH="/opt/aws-cli/v2/current/dist/${LD_LIBRARY_PATH}"
+RUN ln -s /opt/aws-cli/v2/current/dist/libz.so.1 /opt/aws-cli/bin/libz.so.1
 
 ENV JAVA_HOME /usr/lib/jvm/jre-openjdk/
 
@@ -36,6 +37,5 @@ RUN chmod +x /opt/bin/nextflow.aws.sh
 
 # RNA Seq
 COPY rnaseq /opt/work/rnaseq
-
 WORKDIR /opt/work
 ENTRYPOINT ["/opt/bin/nextflow.aws.sh"]
